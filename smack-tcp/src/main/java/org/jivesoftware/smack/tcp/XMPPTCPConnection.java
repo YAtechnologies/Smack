@@ -628,6 +628,18 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                             break innerloop;
                         }
                     }
+
+                    // Legacy SSL
+                    if (ConnectionConfiguration.SecurityMode.legacy == config.getSecurityMode()) {
+                        try {
+                            proceedTLSReceived();
+                        } catch (Exception e) {
+                            LOGGER.finer("Could not enable SSL encryption while connecting to " + inetSocketAddress);
+                            RemoteConnectionException<Rfc6120TcpRemoteConnectionEndpoint> rce = new RemoteConnectionException<>(
+                                    endpoint, inetAddress, e);
+                            connectionExceptions.add(rce);
+                        }
+                    }
                     LOGGER.finer("Established TCP connection to " + inetSocketAddress);
                     // We found a host to connect to, return here
                     this.host = host;
